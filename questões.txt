@@ -1,0 +1,139 @@
+
+*questão 1: correção das notas de arq e circuitos*
+sw $s0, 0($a1)
+sw $s1, 0($a2) -> ambos são em zero pois estarão armazenados na msm pos
+lw a2
+lw a1
+
+*questão 2:*
+explicar 
+É uma pa, ou seja, queremos saber quantas vezes um num, somando-se sequencialmente a um certo padrão, chega até um resultado específico
+
+*questão 3:
+Um procedimento lê palavras de dois bancos de dados, A[ ] e B[ ], cujos endereços-base já estão armazenados em $a1 e em $a2. O procedimento lê as palavras do banco A[ ] de modo crescente e as palavras do banco B[ ] de modo decrescente, uma a uma e as compara, a partir do endereço inicial. Isto é, primeiro elemento de A[ ] é comprado com o último de B[ ], o segundo elemento de A[ ] é comparado com o penúltimo elemento de B[ ], e assim sucessivamente. Os elementos de A[ ] e B[ ] são comparados e copiados para um terceiro banco C[ ], cujo o endereço base está armazenado em $a3, de acordo com as seguintes regras: a) Caso o elemento do banco A[ ] seja maior do que o elemento do banco B[ ], o elemento de A[ ] é copiado em C[ ]; b); Caso o elemento de A[ ] seja menor do que o de B[ ], o elemento de B[ ] é copiado em C[ ]. A comparação termina quanto um dos elementos de A[ ] ou B[ ] for igual a 5 ou o número de elementos for 100. Quantos elementos de A[ ] e B[ ]são copiados para o banco C [ ]?
+
+addi $t3, $zero, 396 (99x4, espaço na memória mas em bits)
+addi $t4, $zero, 5
+addi $t5, $zero, 100
+start: beq $t0, $t5, end
+	lw $s0, 0($ti)
+	lw $s1, 0($t3)
+	beq $s0, $t4, end
+	beq $s1, $t4, end
+	slt $t0, $s0, $s1
+	beq $t0, $zero, proc1
+	bne $t0, $zero, proc2
+proc1: sw $s0, 0($t2)
+proc2: sw $s1, 0($t2)
+prox_pos: addi
+	addi
+	addi
+	addi
+	j start
+end: add
+	jr $ra
+*
+
+*questão 4: calcular média de 10 nums*
+    start: addi $s0, $zero, 1 #contador
+        add $t3, $zero, $zero ## contador de iterações
+
+    loop: lw $t0, 0($a0) ## carregando o primeiro valor do vetor que esta a0 e armazenando em t0 
+        slti $t1, $s0, 10
+        beq $t1, $zero, divisao
+        add $t2, $t2, $t0 ## acumulador
+        add $s0, $s0, 1
+        addi $a0, $a0, 4
+        j loop
+
+    divisao:slti $t4, $t3, 10
+        beq $t4, $zero, exit
+        addi $t3, $t3, 1 ## valor da divisao
+        subi $t2, $t2, 10 ## resto 
+        j divisao
+
+    exit: jr $ra
+
+
+*questão 5: mult div e pot*
+
+#A =$A0,  B = $A1,  X = $A2  e Y  = $A3,
+ 
+   addi $sp,$sp,-12
+     sw $a0,0($sp)
+     sw $a3,4($sp)
+     sw $ra,8($sp)
+     add $a0,$zero,$a1
+     add $a1,$zero,$a3
+     jal Mult
+     lw $a0,0($sp)
+     lw $a3,4($sp)
+     lw $ra,8($sp)
+     addi $sp,$sp,12
+     add $a3,$zero,$v0
+     add $a2,$zero,$a0
+     jal Div
+     add $a0,$zero,$v0
+     add $a1,$zero,$a2
+     jal Pot
+     jr $ra
+ 
+Mult: add $t0,$zero,$zero # contador
+loop:    slt $t1,$t0,$a1
+     beq $t1,$zero,Exit
+     addi $t0,$t0,1
+     add $v0,$v0,$a0
+     j loop
+Exit:  jr $ra
+ 
+Div: add $t0,$zero,$zero
+loop2: slt $t1,$t0,$a3
+      beq $t1,$zero,Exit2
+      addi $v0,$t0,1
+      sub $a2,$a2,$a2
+      j loop2
+Exit2: jr $ra
+
+Pot: add $t0,$zero,$zero   # contador potenciacao
+      add $t2,$zero,$zero # contador multiplicacao
+loopPot:slt $t1,$t0,$a1
+    addi $t0,$t0,1
+    beq $t1,$zero,Exit3
+loop3:    slt $t1,$t2,$a1
+     beq $t1,$zero,loopPot
+     addi $t2,$t2,1
+     add $v0,$v0,$a0
+     j loop3
+Exit3:  jr $ra
+ 
+*questão 6: dois valores hexadecimais; copiar num processador Mips de 32bits, duas palavras por vez, armazenadas a partir de um endereço 208000 (base 16) para um endereço 3208FF0. devem ser armazenadas em $v0. para de copiar quando uma das palavras dev estar entre -1049 e -6, e a outra palavra entre 51 e 150. As palavras finais devem ser copiadas, mas não devem ser contadas (o add precisa ficar em cima e n no final) *
+
+    lui $a1,0x2080 //pegar um valor de memória escrito em hexadecimal -> TEM 16 BITS, pode armazenar 4 palavras
+    addi $a1,$a1,0x00 //insere valor - uso add só pra armazenar o resto da palavra que não coube
+    lui $a2,0x3208 //
+    addi $a2,$a2,0xFF0 //
+
+   ( # -1020 < a1 < -5 && 50 < a2 < 150 )
+
+Proc:
+
+    addi $t1,$zero,-1020 //intervalos 
+    addi $t2,$zero,-5
+    addi $t0,$zero,50
+    addi $t4,$zero,150
+loop:    add $a1,$a1,$a1 //a1*2 //tem que ser repetida até preencher todo o intervalo de memória
+    add $a2,$a2,$a2 //a2*2
+    slt $t5,$a1,$t1 //se a1 for menor que t1, t5 é 1; precisa ser maior, ent t5 é zero enquanto estiver no loop
+    bne $t5,$zero,Exit //se t5 for diferente de zero, vai pro exit
+    slt $t5,$a1,$t2 //
+    beq $t5,$zero,Exit //se for zero, vai pro exit
+    slt $t5,$a2,$t0 //mesma coisa com a outra palavra
+    bne $t5,$zero,Exit
+    slt $t5,$a1,$t4
+    beq $t5,$zero,Exit
+    j loop
+Exit:  add $v0,$v0,$a1 
+    add $v0,$v0,$a2 //pede no enunciado; elas só se sobrecreveriam se fosse v0, zero, ax, mas é v0, v0, ax
+    jr $ra
+
+*questão 7:*

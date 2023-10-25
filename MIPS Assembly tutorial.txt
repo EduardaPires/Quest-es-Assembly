@@ -1,0 +1,17 @@
+- Assembly, por ser de baixo nível, tem mais poder e controle que as outras linguagens
+
+No Mars, temos a aba de registradores a direita, que são aqueles presentes na CPU do pc, memórias muito pequenas e mais rápidas que as outras. Não podemos ter acesso a todos eles, mas a maioria esta disponivel para o manuseio do programador. Em cada um podemos guardar uma informação, é basicamente uma variável mas que não é armazenada em um local aleatório da memória.  
+
+$ -> simboliza uma constante
+$at -> não pode ser usado pois funciona para o processamento
+$v0 e v1 -> servem para retornos
+$a... -> passam argumentos (por isso o a) para funções
+$t... -> aquelles que podem ter seu valor alterado na função (provavelmente o t é de temporary?)
+$s... -> são salvos na stack (seriam as var primitivas?)
+
+formato de arquivo termina com .asm
+todo programa mips (programa em assembly) tem uma parte .data (onde declara as vars) e uma .text (onde ficarão as funções)
+ ex de hello world (em mips1.asm) vc declara em .data myMessage (nome da var): .asciiz (comando de string) "Hello world" (se quiser pular linha usa barra n)
+em .text, linha 1: li (de load imeddiate, pedindo pro sistema se preparar) $v0 (o retorno será feito nesse register), 4
+na 2: la (load adress, ou seja, salve tal valor em um register) $a0, myMessage (está armazenando myMessage em $a0)
+na 3: syscall (irá executar o comando, pois está chamando o sistema)
